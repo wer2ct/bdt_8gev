@@ -79,7 +79,7 @@ class sampleContainer:
                             decayz = it.second.getVertex()[2]
 
                 for hit in HcalRecHits:
-                    if hit.getZPos() >= 800:
+                    if hit.getZPos() >= 870:
                         EHcal += 12*hit.getEnergy()
                         
                 for hit in EcalRecHits:
