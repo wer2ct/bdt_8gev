@@ -237,8 +237,6 @@ class sampleContainer:
 
                         rms_r = math.sqrt(rms_r)
                     
-
-                        #evt.append(rms_r) 
                         evt.append(len(layershit)) #0
                   
                         evt.append(xstd) #1
@@ -248,14 +246,6 @@ class sampleContainer:
                         evt.append(xmean) #4
                         evt.append(ymean) #5
                         evt.append(rmean) #6
-
-                        #evt.append(zstd_equal) 
-                        #evt.append(xstd_equal) 
-                        #evt.append(ystd_equal) 
-
-                        #evt.append(rmean_equal) 
-                        #evt.append(xmean_equal) 
-                        #evt.append(ymean_equal) 
                         
                         evt.append(isohits) #7
                         evt.append(isoE) #8
