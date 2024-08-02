@@ -30,7 +30,6 @@ class sampleContainer:
         self.isBkg = isBkg
         self.events = []
         evtcount = 0
-
         rootfile = TFile(EDPath + "event_histograms.root", "recreate")
 
         h0 = TH1F("totalevents", "totalevents", 40, 0, 2000)
@@ -72,6 +71,9 @@ class sampleContainer:
                 Edownstream = 0
                 EHcal = 0
 
+                hit_energy_thresh = 0.0 #If set to 1.5 MeV can be used as a temporary fix to the Hcal Rec Hits bug. Don't do this unless you have trained with the same setting on!! For the purposes of background testing on existing v2 weights just don't touch!
+
+
                 decayz = 1
                 for it in SimParticles:
                     parents = it.second.getParents()
@@ -80,8 +82,9 @@ class sampleContainer:
                             decayz = it.second.getVertex()[2]
 
                 for hit in HcalRecHits:
-                    if hit.getZPos() >= 870:
-                        EHcal += 12*hit.getEnergy()
+                    if (12.2*hit.getEnergy() >= hit_energy_thresh):
+                        if hit.getZPos() >= 870:
+                            EHcal += 12*hit.getEnergy()
                         
                 for hit in EcalRecHits:
                     if hit.getZPos() > 500:
@@ -156,48 +159,51 @@ class sampleContainer:
                         
                         
                         for hit in HcalRecHits:
-                            if hit.getZPos() >= 870:
-                                hits += 1
-                                x = hit.getXPos()
-                                y = hit.getYPos()
-                                z = hit.getZPos()
-                                r = math.sqrt(x*x + y*y)
-                        
-                                energy = hit.getEnergy()
-                                Etot += energy
-                                
-                                xmean += x*energy
-                                ymean += y*energy
-                                zmean += z*energy
+                            if (12.2*hit.getEnergy() >= hit_energy_thresh):
+                                if hit.getZPos() >= 870:
+                                    hits += 1
+                                    x = hit.getXPos()
+                                    y = hit.getYPos()
+                                    z = hit.getZPos()
+                                    r = math.sqrt(x*x + y*y)
+                                    
+                                    energy = hit.getEnergy()
+                                    Etot += energy
+                                    
+                                    xmean += x*energy
+                                    ymean += y*energy
+                                    zmean += z*energy
+                                    rmean += r*energy
+                                    
+                                    xmean_equal += x
+                                    ymean_equal += y
+                                    zmean_equal += z
 
-                                xmean_equal += x
-                                ymean_equal += y
-                                zmean_equal += z
-
-                                rms_r += r*r
+                                    rms_r += r*r
                         
-                                if not z in layershit:
-                                    layershit.append(z)
-                                
-                                x_proj = x0_gamma[0] + (z - x0_gamma[2])*p_gamma[0]/p_gamma[2]
-                                y_proj = x0_gamma[1] + (z - x0_gamma[2])*p_gamma[1]/p_gamma[2]
-                                projdist = math.sqrt((x-x_proj)**2 + (y-y_proj)**2)
-                                downstreamrmean_gammaproj += projdist*energy
+                                    if not z in layershit:
+                                        layershit.append(z)
+                                        
+                                    x_proj = x0_gamma[0] + (z - x0_gamma[2])*p_gamma[0]/p_gamma[2]
+                                    y_proj = x0_gamma[1] + (z - x0_gamma[2])*p_gamma[1]/p_gamma[2]
+                                    projdist = math.sqrt((x-x_proj)**2 + (y-y_proj)**2)
+                                    downstreamrmean_gammaproj += projdist*energy
                         
-                                closestpoint = 9999
-                                for hit2 in HcalRecHits:
-                                    if abs(z - hit2.getZPos()) < 1:
-                                        sepx = math.sqrt((x-hit2.getXPos())**2)
-                                        sepy = math.sqrt((y-hit2.getYPos())**2)
-                                        if sepx > 0 and sepx%50 == 0:
-                                            if sepx < closestpoint:
-                                                closestpoint = sepx
-                                        elif sepy > 0 and sepy%50 == 0:
-                                            if sepy < closestpoint:
-                                                closestpoint = sepy
-                                if closestpoint > 50:
-                                    isohits += 1
-                                    isoE += energy
+                                    closestpoint = 9999
+                                    for hit2 in HcalRecHits:
+                                        if (12.2*hit2.getEnergy() >= hit_energy_thresh):
+                                            if abs(z - hit2.getZPos()) < 1:
+                                                sepx = math.sqrt((x-hit2.getXPos())**2)
+                                                sepy = math.sqrt((y-hit2.getYPos())**2)
+                                                if sepx > 0 and sepx%50 == 0:
+                                                    if sepx < closestpoint:
+                                                        closestpoint = sepx
+                                                elif sepy > 0 and sepy%50 == 0:
+                                                    if sepy < closestpoint:
+                                                        closestpoint = sepy
+                                    if closestpoint > 50:
+                                        isohits += 1
+                                        isoE += energy
                             
                         xmean /= Etot
                         ymean /= Etot
@@ -213,19 +219,20 @@ class sampleContainer:
                         downstreamrmean_gammaproj /= Etot    
                      
                         for hit in HcalRecHits:
-                            if hit.getZPos() >= 870:
-                                x = hit.getXPos()
-                                y = hit.getYPos()
-                                z = hit.getZPos()
-                                energy = hit.getEnergy()
+                            if (12.2*hit.getEnergy() >= hit_energy_thresh):
+                                if hit.getZPos() >= 870:
+                                    x = hit.getXPos()
+                                    y = hit.getYPos()
+                                    z = hit.getZPos()
+                                    energy = hit.getEnergy()
 
-                                xstd += energy*(x-xmean)**2
-                                ystd += energy*(y-ymean)**2
-                                zstd += energy*(z-zmean)**2
+                                    xstd += energy*(x-xmean)**2
+                                    ystd += energy*(y-ymean)**2
+                                    zstd += energy*(z-zmean)**2
 
-                                xstd_equal += (x-xmean_equal)**2
-                                ystd_equal += (y-ymean_equal)**2
-                                zstd_equal += (z-zmean_equal)**2
+                                    xstd_equal += (x-xmean_equal)**2
+                                    ystd_equal += (y-ymean_equal)**2
+                                    zstd_equal += (z-zmean_equal)**2
 
                         xstd = math.sqrt(xstd/Etot)
                         ystd = math.sqrt(ystd/Etot)
@@ -271,7 +278,8 @@ class sampleContainer:
 
                                 hcalrechits = []
                                 for hit in HcalRecHits:
-                                    hcalrechits.append([[hit.getXPos(), hit.getYPos(), hit.getZPos()], hit.getEnergy()])
+                                    if (12.2*hit.getEnerg() >= hit_energy_thresh):
+                                        hcalrechits.append([[hit.getXPos(), hit.getYPos(), hit.getZPos()], hit.getEnergy()])
                             
                                 simparticles = []
                                 for it in SimParticles:
@@ -351,7 +359,7 @@ if __name__ == '__main__':
 
     parser.add_option('--max_evt', dest='max_evt', type='int', default=100, help='Max Events to load')
     parser.add_option('--bdt_path', dest='bdt_path', default='/sfs/qumulo/qhome/wer2ct/LDMX/ldmx-analysis/bdt_8gev/weights/bdt_v2_0/bdt_v2_0_weights.pkl', help='BDT model to use')
-    parser.add_option('--evtdisplay_path', dest='evtdisplay_path', default='/scratch/wer2ct/EcalPN_bdt/passing/', help='Where to put events that pass veto')
+    parser.add_option('--evtdisplay_path', dest='evtdisplay_path', default='/scratch/wer2ct/EcalPN_bdt/', help='Where to put events that pass veto')
     
     parser.add_option('--bkg_dir', dest='bkg_dir', default='/project/hep_aag/ldmx/background/8GeV/v3.3.3_ecalPN_tskim-batch2/', help='name of background file directory')
     parser.add_option('--sig_dir', dest='sig_dir', default='/project/hep_aag/ldmx/ap/visibles/produced/8_GeV/v14/m100_testing/', help='name of signal file directory')
