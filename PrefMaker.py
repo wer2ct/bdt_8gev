@@ -169,76 +169,70 @@ class sampleContainer:
                                     isohits += 1
                                     isoE += energy
                             
-                            xmean /= Etot
-                            ymean /= Etot
-                            zmean /= Etot
-                            rmean /= Etot
+                        xmean /= Etot
+                        ymean /= Etot
+                        zmean /= Etot
+                        rmean /= Etot
 
-                            xmean_equal /= hits
-                            ymean_equal /= hits
-                            zmean_equal /= hits
-                            rmean_equal /= hits
-                            rms_r /= hits
+                        xmean_equal /= hits
+                        ymean_equal /= hits
+                        zmean_equal /= hits
+                        rmean_equal /= hits
+                        rms_r /= hits
                         
-                            downstreamrmean_gammaproj /= Etot    
+                        downstreamrmean_gammaproj /= Etot    
                      
-                            for hit in HcalRecHits:
-                                if hit.getZPos() >= 870:
-                                    x = hit.getXPos()
-                                    y = hit.getYPos()
-                                    z = hit.getZPos()
-                                    energy = hit.getEnergy()
+                        for hit in HcalRecHits:
+                            if hit.getZPos() >= 870:
+                                x = hit.getXPos()
+                                y = hit.getYPos()
+                                z = hit.getZPos()
+                                energy = hit.getEnergy()
 
-                                    xstd += energy*(x-xmean)**2
-                                    ystd += energy*(y-ymean)**2
-                                    zstd += energy*(z-zmean)**2
+                                xstd += energy*(x-xmean)**2
+                                ystd += energy*(y-ymean)**2
+                                zstd += energy*(z-zmean)**2
 
-                                    xstd_equal += (x-xmean_equal)**2
-                                    ystd_equal += (y-ymean_equal)**2
-                                    zstd_equal += (z-zmean_equal)**2
+                                xstd_equal += (x-xmean_equal)**2
+                                ystd_equal += (y-ymean_equal)**2
+                                zstd_equal += (z-zmean_equal)**2
 
-                            xstd = math.sqrt(xstd/Etot)
-                            ystd = math.sqrt(ystd/Etot)
-                            zstd = math.sqrt(zstd/Etot)
+                        xstd = math.sqrt(xstd/Etot)
+                        ystd = math.sqrt(ystd/Etot)
+                        zstd = math.sqrt(zstd/Etot)
 
-                            xstd_equal = math.sqrt(xstd_equal/hits)
-                            ystd_equal = math.sqrt(ystd_equal/hits)
-                            zstd_equal = math.sqrt(zstd_equal/hits)
+                        xstd_equal = math.sqrt(xstd_equal/hits)
+                        ystd_equal = math.sqrt(ystd_equal/hits)
+                        zstd_equal = math.sqrt(zstd_equal/hits)
 
-                            rms_r = math.sqrt(rms_r)
+                        rms_r = math.sqrt(rms_r)
     
-                            # Fill event with features to train BDT
+                        # Fill event with features to train BDT
 
-                            #evt.append(rms_r) 
-                            evt.append(len(layershit)) #0
+                        #evt.append(rms_r) 
+                        evt.append(len(layershit)) #0
                             
-                            evt.append(xstd) #1
-                            evt.append(ystd) #2
-                            evt.append(zstd) #3
+                        evt.append(xstd) #1
+                        evt.append(ystd) #2
+                        evt.append(zstd) #3
                                
-                            evt.append(xmean) #4
-                            evt.append(ymean) #5
-                            evt.append(rmean) #6
-
-                            #evt.append(zstd_equal) 
-                            #evt.append(xstd_equal) 
-                            #evt.append(ystd_equal) 
-
-                            #evt.append(rmean_equal) 
-                            #evt.append(xmean_equal) 
-                            #evt.append(ymean_equal) 
+                        evt.append(xmean) #4
+                        evt.append(ymean) #5
+                        evt.append(rmean) #6
+ 
                     
-                            evt.append(isohits) #7
-                            evt.append(isoE) #8
-                            evt.append(hits) #9
+                        evt.append(isohits) #7
+                        evt.append(isoE) #8
+                        evt.append(hits) #9
                     
-                            evt.append(Etot) #10
+                        evt.append(Etot) #10
                     
-                            evt.append(downstreamrmean_gammaproj) #11
+                        evt.append(downstreamrmean_gammaproj) #11
 
 
-                            self.events.append(evt)
-                            evtcount += 1
+                        self.events.append(evt)
+                        evtcount += 1
+                            
                     if evtcount%50000 == 0:
                         print("Events loaded: ", evtcount)
                     if evtcount > self.maxEvts:
